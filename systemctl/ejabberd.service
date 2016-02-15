@@ -1,0 +1,20 @@
+
+ejabberd.service
+
+	[Unit]
+	Description=ejabberd container for tadaam, v1.2, managed by supervisord, data from ejabberd_pg, conf from ejabberd_conf
+	After=ejabberd_pg.service
+	Requires=docker.service
+
+	[Service]
+	TimeoutStartSec=0
+	KillMode=none
+	#import de systemd-docker if needed (for run commands)
+	ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+	ExecStart=/opt/bin/systemd-docker run --rm -name "ejabberd_tadaam_v1.2" -p 5222:5222 -p 5281:5281 -p 5269:5269 --volumes-from ejabberd_conf -h services.tadaam.com --link ejabberd_pg:postgres ejabberd_tadaam_v1.2 
+
+	ExecStop=/usr/bin/docker stop ejabberd_tadaam_v1.2
+
+
+	[Install]
+	WantedBy=multi-user.target

@@ -1,0 +1,22 @@
+ejabberd_pg.service
+
+	[Unit]
+	Description=(non persistent) Ejabberd Postgresql DB container
+	After=ejabberd_conf.service
+	Before=ejabberd.service
+	Requires=docker.service
+
+	[Service]
+	TimeoutStartSec=0
+	KillMode=none
+	#import de systemd-docker if needed
+	ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+	ExecStartPre=-/usr/bin/docker kill ejabberd_pg
+	ExecStart=/opt/bin/systemd-docker run -p 5432:5432 -v /acs/confdata/postgresql/:/var/lib/postgresql/PGDB --name ejabberd_pg adhrick/postgres_ejabberd
+
+	ExecStop=/opt/bin/systemd-docker stop ejabberd_pg
+
+
+	[Install]
+	WantedBy=multi-user.target
+

@@ -1,0 +1,20 @@
+
+ejabberd_conf.service
+
+	[Unit]
+	Description=Ejabberd_conf service : Data-only container for ejabberd configuration
+	After=docker.service
+	Requires=docker.service
+
+	[Service]
+	TimeoutStartSec=0
+	KillMode=none
+	#import de systemd-docker if needed
+	ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/opt/bin ibuildthecloud/systemd-docker
+	ExecStartPre=-/opt/bin/systemd-docker kill ejabberd_conf
+	ExecStartPre=-/opt/bin/systemd-docker rm ejabberd_conf
+	ExecStart=/opt/bin/systemd-docker run -v /home/core/ejabberdconf:/opt/ejabberd/conf --name %n busybox tail -f /dev/null
+
+	[Install]
+	WantedBy=multi-user.target
+
