@@ -13,7 +13,7 @@ theme.wallpaper_cmd = { "/usr/bin/nitrogen --restore" }
 
 
 -- {{{ Styles
-theme.font      = "Profont 10"
+theme.font      = "Roboto 11"
 
 -- {{{ Colors
 theme.fg_normal = "#FFFFFF"--"#DCDCCC"

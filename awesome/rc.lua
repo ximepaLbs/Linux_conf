@@ -637,12 +637,23 @@ end
 -- }}}
 
 -- Autorun programs
+-- we need a run_once function 
+function run_once(cmd)
+  findme = cmd
+  firstspace = cmd:find(" ")
+  if firstspace then
+    findme = cmd:sub(0, firstspace-1)
+  end
+  awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
+end
+
+
 autorun = true
 autorunApps =
 {
     "autocutsel -selection CLIPBOARD -fork", --clipboard
     "autocutsel -selection PRIMARY -fork",
-    "batterymon", -- Im on a laptop and like this widget
+    -- "batterymon", -- Im on a laptop and like this widget
     "nitrogen --restore"--desktop background
 }
 
@@ -650,6 +661,7 @@ if autorun then
         for _, app in pairs(autorunApps) do
                 awful.util.spawn(app)
         end
+        run_once("batterymon")
 end
 
 -- Autostart
@@ -681,39 +693,35 @@ autostart_dir = os.getenv("HOME") .. "/.config/autostart"
 autostart(autostart_dir)
 
 
---exemple notification by libnotify
 
+
+
+--notification by libnotify  
 
 -- naughty.notify({
 --     text = "notification",
 --     title = "alert",
---     position = "top_right",
 --     timeout = 7,
---     fg="#62E7C4",
---     --bg="#bbggcc",
---     screen = 1,
---     font = "Profont 13",
---     ontop = true, 
+--     fg="#AECF96",
+--     font="Roboto 13",
+--     screen=2
+--     -- ontop = true, 
 --     --run = function () awful.util.spawn("wicd-client") end
 -- })
 
--- naughty.notify({
---   naughty.config.defaults.timeout          = 5
---   naughty.config.defaults.screen           = 1
---   naughty.config.defaults.position         = "top_right"
---   naughty.config.defaults.margin           = 4
---   naughty.config.defaults.height           = 25
---   naughty.config.defaults.width            = 300
---   naughty.config.defaults.gap              = 2
---   naughty.config.defaults.ontop            = true
---   naughty.config.defaults.font             = beautiful.font or "Profont 8"
---   naughty.config.defaults.icon             = nil
---   naughty.config.defaults.icon_size        = 16
---   naughty.config.defaults.fg               = beautiful.fg_focus or '#ffffff'
---   naughty.config.defaults.bg               = beautiful.bg_focus or '#535d6c'
---   naughty.config.presetss.border_color     = beautiful.border_focus or '#535d6c'
---   naughty.config.defaults.border_width     = 1
---   naughty.config.defaults.hover_timeout    = nil)}
+naughty.config.defaults.timeout          = 5
+naughty.config.defaults.screen           = 2
+naughty.config.defaults.position         = "top_right"
+-- naughty.config.defaults.margin           = 4
+naughty.config.defaults.height           = 25
+-- naughty.config.defaults.width            = 300
+naughty.config.defaults.gap              = 2
+naughty.config.defaults.ontop            = true
+naughty.config.defaults.font             = "Roboto"
+-- naughty.config.defaults.icon             = nil
+naughty.config.defaults.icon_size        = 13
+naughty.config.defaults.fg               = beautiful.fg_focus or '#AECF96'
+-- naughty.config.defaults.hover_timeout    = nil
 
 
 --{{{
@@ -811,4 +819,12 @@ autostart(autostart_dir)
 -- vicious.register(fs.h, vicious.widgets.fs, "${/home used_p}",        599)
 -- vicious.register(fs.s, vicious.widgets.fs, "${/var used_p}", 599)
 -- vicious.register(fs.b, vicious.widgets.fs, "${/tmp used_p}",  599)
+
+-- Nofications to twmn daemon 
+-- naughty.config.notify_callback = function(args)
+--         awful.util.spawn("twmnc -c '" .. args.text .. "' -t '" .. args.title .. "'")
+--         return nil
+-- end
+
 -- -- }}}
+
