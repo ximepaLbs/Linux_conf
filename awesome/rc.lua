@@ -5,7 +5,7 @@
 --   * kinda heavily modified to suit my needs
 --   * credits to http://awesome.naquadah.org/wiki/Davids_volume_widget
 --   * credits to Dad` for inspiration
---	 * I don't claim author rights, just a simple user
+--	 * I don't claim author rights, being just a simple user
 
 -- This work is licensed under the Creative Commons Attribution-Share
 -- Alike License: http://creativecommons.org/licenses/by-sa/3.0/
@@ -76,26 +76,29 @@ layouts = {
 -- }}}
 
 -- {{{ Tags
+-- current limitation : the 2 tags array must have same length
 tags = {
-  names  = { "1.term", "2.dev", "3.web", "4.mail", "5.hide","6.misc","7.monitor"},
-  layout = { layouts[1], layouts[2], layouts[2], layouts[1], layouts[1], layouts[1],layouts[1]}
+  names  = { "1.term", "2.dev", "3.web", "4.mail", "5.monitor", "6.spare", "7.spare"},
+  layout = { layouts[1], layouts[2], layouts[2], layouts[1],layouts[1], layouts[1],layouts[1]}
 }
 
 tags2 = {
-  names  = { "21.terms","22.dev2","23.web", "24.VM", "25.Hyp","26.IRC//IM","27.Media","28.Skype"},
-  layout = { layouts[1], layouts[1], layouts[1], layouts[1], layouts[1],layouts[1], layouts[1], layouts[1]}
+  names  = { "21.Tmux","22.dev2","23.Web", "24.VM", "25.VM","26.IRC","27.Media", "8.hide"},
+  layout = { layouts[1], layouts[1], layouts[1], layouts[1], layouts[1],layouts[1], layouts[1], layouts[8]}
 }
 
--- screen Mgt, 1 to 2 screens
---for s = 1, screen.count() do
+-- screen Mgt, 1 to 2 screens with 2 arrays of tags
+--if you want same tags on multiple screens use for s = 1, screen.count() do
 for s=1,1 do
-    tags[s] = awful.tag(tags.names, s, tags.layout)
-    --patch hiding desktop 7
-    awful.tag.setproperty(tags[s][5], "hide",   true)
+  tags[s] = awful.tag(tags.names, s, tags.layout)
+--  awful.tag.setproperty(tags[s][7], "hide",   true)
+-- awful.tag.setproperty(tags[s][8], "hide",   true)
 end
 
 for s=2,screen.count() do
-  tags[s] = awful.tag(tags2.names, s, tags2.layout)
+    tags[s] = awful.tag(tags2.names, s, tags2.layout)
+    --patch hiding desktop 7
+    awful.tag.setproperty(tags[s][8], "hide",   true)
 end
 -- }}}
 
@@ -156,7 +159,7 @@ kbdcfg.widget:buttons(
 -- right_layout:add(kbdcfg.widget)
 --     }}} End Keyboard stuff
 
--- My keybindings
+--  keybindings - shortcuts
 globalkeys = awful.util.table.join(globalkeys,
     awful.key({ modkey, "Mod1"    }, "1",     function () os.execute(kbd_dbus_sw_cmd .. "0") end),
     awful.key({ modkey, "Mod1"    }, "2",     function () os.execute(kbd_dbus_sw_cmd .. "1") end),
@@ -187,8 +190,8 @@ netwidget = wibox.widget.textbox()
 vicious.register(netwidget, vicious.widgets.net, '<span color="'
   -- .. beautiful.fg_netdn_widget ..'">${enp0s25 down_kb}</span> <span color="'
   -- .. beautiful.fg_netup_widget ..'">${enp0s25 up_kb}</span>', 3)
-  .. beautiful.fg_netdn_widget ..'">${wlp3s0 down_kb} KB </span> <span color="'
-  .. beautiful.fg_netup_widget ..'">${wlp3s0 up_kb} KB </span>', 3)
+  .. beautiful.fg_netdn_widget ..'">${enp2s0 down_kb} KB </span> <span color="'
+  .. beautiful.fg_netup_widget ..'">${enp2s0 up_kb} KB </span>', 3)
 -- }}}
 
 
@@ -263,7 +266,8 @@ taglist.buttons = awful.util.table.join(
 ))
 
 
---- Screen 1 
+-- Screen 1
+-- small, so not too many widgets
 s=1
 -- Create a promptbox
 promptbox[s] = awful.widget.prompt()
@@ -298,11 +302,20 @@ left_layout:add(promptbox[s])
 
 local custom_widgets =
 { 
-    cpuicon, cpugraph, cpuwidget, separator,fsicon,fs.h,separator,fs.r,separator,memicon, memwidget, separator,
-    dnicon, netwidget, upicon, separator,
+    separator, dnicon, netwidget, upicon, separator,
     volume_widget, separator,
     dateicon, datewidget, separator
 }
+
+-- Possible widgets : 
+-- widgets should be split with separator (vertical bar)
+-- cpuicon, cpugraph, cpuwidget
+-- separator
+-- FileSystem : fsicon,fs.h,separator,fs.r
+-- Memory : memicon, memwidget, 
+-- net up/down : dnicon, netwidget, upicon
+-- Volume control volume_widget
+-- Date&time dateicon, datewidget
 
 local right_layout = wibox.layout.fixed.horizontal()
 if s == 1 then right_layout:add(wibox.widget.systray()) end
@@ -311,10 +324,6 @@ for _, wdgt in pairs(custom_widgets) do
 end
   --we add the keyboard widget to the layout
 right_layout:add(kbdcfg.widget)
-
-
---adding raminfo module from "activeram" by naqqadah
-
 
 -- Now bring it all together (with the tasklist in the middle)
 local layout = wibox.layout.align.horizontal()
@@ -349,13 +358,13 @@ if(screen.count()>1)then
   --Create the wibox
   mywibox[s] = awful.wibox({      screen = s,
       --I like big bars
-      fg = beautiful.fg_normal, height = 20,
+      fg = beautiful.fg_normal, height = 22,
       bg = beautiful.bg_normal, position = "top",
       border_color = beautiful.border_focus,
       border_width = beautiful.border_width
   })
   mywibox[s] = awful.wibox({      screen = s,
-      fg = beautiful.fg_normal, height = 20,
+      fg = beautiful.fg_normal, height = 22,
       bg = beautiful.bg_normal, position = "top",
       border_color = beautiful.border_focus,
       border_width = beautiful.border_width
@@ -372,7 +381,7 @@ if(screen.count()>1)then
   local custom_widgets =
   { 
       memicon, memwidget, separator,fsicon,fs.h,separator,fs.r,separator,separator, dnicon, netwidget, upicon, separator,
-     volume_widget
+     volume_widget, separator, datewidget, separator
   }
 
   local right_layout = wibox.layout.fixed.horizontal()
@@ -653,7 +662,7 @@ autorunApps =
 {
     "autocutsel -selection CLIPBOARD -fork", --clipboard
     "autocutsel -selection PRIMARY -fork",
-    -- "batterymon", -- Im on a laptop and like this widget
+    -- "batterymon", -- If on a laptop I like this widget, but you should run it once only, see next
     "nitrogen --restore"--desktop background
 }
 
@@ -693,11 +702,9 @@ autostart_dir = os.getenv("HOME") .. "/.config/autostart"
 autostart(autostart_dir)
 
 
-
-
-
 --notification by libnotify  
 
+-- 'one-shot' example
 -- naughty.notify({
 --     text = "notification",
 --     title = "alert",
@@ -713,8 +720,8 @@ naughty.config.defaults.timeout          = 5
 naughty.config.defaults.screen           = 2
 naughty.config.defaults.position         = "top_right"
 -- naughty.config.defaults.margin           = 4
-naughty.config.defaults.height           = 25
--- naughty.config.defaults.width            = 300
+naughty.config.defaults.height           = 100
+naughty.config.defaults.width            = 300
 naughty.config.defaults.gap              = 2
 naughty.config.defaults.ontop            = true
 naughty.config.defaults.font             = "Roboto"
