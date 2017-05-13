@@ -1,0 +1,211 @@
+"enabling pathogen
+execute pathogen#infect()
+filetype plugin indent on
+syntax on
+
+"enabling 256 colors
+"set t_Co=256
+
+" setting theme
+colorscheme Mustang
+if has("gui_running")
+   let s:uname = system("uname")
+   if s:uname == "Darwin\n"
+      set guifont=Meslo\ LG\ S\ for\ Powerline
+   endif
+endif
+"spell checking in English
+set spelllang=en_us
+filetype plugin indent on
+
+"When indenting with >
+set shiftwidth=4
+set tabstop=4
+
+"on pressing tab, insert 4 spaces
+set expandtab
+
+"Blink cursor instead of beeping
+set visualbell
+
+"Encoding
+set encoding=utf-8
+
+"insert line numbers by default
+set number
+
+"splitting
+set splitbelow
+set splitright
+"split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+"whitespaces and indent
+set wrap
+"set textwidth=120
+"don't use tab character
+set expandtab
+"indent is 4 spaces
+set shiftwidth=4
+set autoindent
+set smartindent
+
+"using backspace as in other programs
+set backspace=indent,eol,start
+
+"enable copy mode when pressing <F3>
+function! Copymode()
+  set nonumber
+  set mouse=""
+endfunction
+
+function! Normalmode()
+  set number
+  set mouse=a
+endfunction
+
+function! Pastemode()
+  set paste
+  startinsert
+endfunction
+
+map <F2> :call Normalmode()<CR>
+map <F3> :call Copymode()<CR>
+map <F4> :call Pastemode()<CR>
+"""""""""""""""""""
+" Python code IDE "
+"""""""""""""""""""
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
+
+" Enable folding with the spacebar
+nnoremap <space> za
+
+" using SimplyFold plugin
+let g:SimpylFold_docstring_preview=1
+
+"remove unecessary whitespaces
+highlight BadWhitespace ctermbg=red guibg=darkred
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h silent match BadWhitespace /\s\+$/
+" syntax highlighting
+let python_highlight_all=1
+
+" python-specific identation
+au BufNewFile,BufRead *.py silent
+    set tabstop=4
+    set softtabstop=4
+    set shiftwidth=4
+    set expandtab
+    set autoindent
+    set fileformat=unix
+" web-specific identation
+au BufNewFile,BufRead *.js, *.html, *.css silent
+    set tabstop=2
+    set softtabstop=2
+    set shiftwidth=2
+
+" ctrl-P plugin to search within code
+"https://github.com/ctrlpvim/ctrlp.vim
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_working_path_mode = 'ra'
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip
+let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_custom_ignore = {'dir':  '\v[\/]\.(git|hg|svn)$','file': '\v\.(exe|so|dll)$','link': 'some_bad_symbolic_links',}
+let g:ctrlp_user_command = 'find %s -type f'
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+"syntastic plugin https://github.com/vim-syntastic/syntastic
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_python_checkers = ['flake8']
+" Repeating actions in visual mode
+vnoremap . :norm.<CR>
+
+"powerline - https://powerline.readthedocs.io
+python from powerline.vim import setup as powerline_setup
+python powerline_setup()
+python del powerline_setup
+
+"jedi plugin
+
+let g:jedi#goto_command = "<C-d>"
+let g:jedi#goto_assignments_command = "<C-g>"
+let g:jedi#goto_definitions_command = "<C-d>"
+let g:jedi#documentation_command = "K"
+let g:jedi#usages_command = "<C-u>"
+let g:jedi#completions_command = "<C-Space>"
+let g:jedi#rename_command = "<C-r>"
+"Searching
+set ignorecase
+set hlsearch
+set smartcase
+set showmatch
+" <Ctrl-l> redraws the screen and removes any search highlighting.
+nnoremap <silent> <C-l> :nohl<CR><C-l>
+
+
+"displaying filetype
+"set filetype
+"setting default filetype to text
+"autocmd BufEnter * if &filetype == "" | setlocal ft=text | endif
+
+" enable mouse
+set mouse=a
+" Last line
+set showmode
+set showcmd
+
+"setting clipboard for copying buffers
+set clipboard=unnamed
+
+" inserting a bit of lines in the end for lisibility
+autocmd InsertEnter * if winheight(0) - winline() < 5 | set scrolloff=9999 | endif
+
+" inserting NERDTREE Plugin options
+" autostart NERDTREE at vim start
+"autocmd vimenter * NERDTree
+" start NERDTREE when vim is empty
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" start NERDTREE when vim is opening a directory
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+" mapping to Ctrl + N
+map <F1> :NERDTreeToggle<CR>
+"hiding .pyc files
+let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+
+"Using git flavored markdown from https://github.com/rhysd/vim-gfm-syntax
+let g:gfm_syntax_enable_always = 1
+"highlighting inner code block
+"let g:markdown_fenced_languages = ['ruby', 'json', 'python', 'html']
+
+"Using livedown to preview markdown "https://github.com/shime/vim-livedown
+" should markdown preview get shown automatically upon opening markdown buffer
+let g:livedown_autorun = 0
+" should the browser window pop-up upon previewing
+let g:livedown_open = 1
+" the port on which Livedown server will run
+let g:livedown_port = 1337
+" the browser to use
+let g:livedown_browser = "Firefox"
+" assigning ctrl-M to toggle the markdown preview
+"map <C-M> :LivedownToggle<CR>
+
+"templating https://github.com/aperezdc/vim-template/blob/master/doc/template.txt
+let g:file_template_default = {}
+let g:templates_no_autocmd = 0
+let g:templates_name_prefix='.vim-template:'
+"let g:templates_directory = '/Users/Tabourin/.vim/templates'
